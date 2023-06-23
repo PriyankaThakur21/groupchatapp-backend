@@ -1,5 +1,8 @@
 const User = require('../models/users');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {Op} =require('sequelize');
+require('dotenv').config();
 
 // check weather email is already present or not
 async function emailPresent(email){
@@ -16,6 +19,26 @@ async function emailPresent(email){
 function isStringInValid(string){
     if(string==undefined || string.length===0) return true;
     else return false;
+}
+
+function generateAccessToken(id){
+    return jwt.sign({id: id}, process.env.TOKEN_SECRET);
+}
+
+
+exports.decodeToken = async(req, res, next)=>{
+    try{
+
+        const token = req.header('Authorization');
+        const user = jwt.verify(token, process.env.TOKEN_SECRET);
+        const fuser = await User.findByPk(user.id);
+        req.user=fuser;
+        next();
+        }
+        catch(error){
+            console.log(error);
+            res.json('User Not found!');
+        }
 }
 
 exports.signupUsers = async (req, res, next)=>{
@@ -60,11 +83,24 @@ exports.loginUsers = async(req, res, next)=>{
             return res.status(401).json('Password is not correct');
         }
         if(result===true){
-            res.status(201).json({message:'Successfully logged in'});
+            res.status(201).json({message:'Successfully logged in', token: generateAccessToken(user.id)});
         }
     })
     }
     catch(err){
         console.log(err);
+    }
+}
+
+exports.getAllusers = async(req, res, next)=>{
+    try{
+
+    const users = await User.findAll({where:{id:{[Op.ne]: +req.user.id}},
+        attributes:['id','name']
+    });
+    res.status(200).json(users);
+    }
+    catch(err){
+        res.status(401).json('Something went wrong');
     }
 }
