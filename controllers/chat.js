@@ -10,3 +10,14 @@ exports.postmsg = async(req, res, next)=>{
         res.status(401).json({'error': err});
     }
 }
+
+exports.getmsg = async(req, res, next)=>{
+    try{
+        const msg = await Chats.findAll();
+        const id = req.user.id;
+        res.status(200).json({'chat': msg, 'id': id});
+    }
+    catch(err){
+        res.json({'error': err});
+    }
+}
