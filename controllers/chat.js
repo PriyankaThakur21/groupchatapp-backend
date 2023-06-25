@@ -14,8 +14,8 @@ exports.postmsg = async(req, res, next)=>{
 exports.getmsg = async(req, res, next)=>{
     try{
         const msg = await Chats.findAll();
-        const id = req.user.id;
-        res.status(200).json({'chat': msg, 'id': id});
+        const user = await User.findByPk(req.user.id);
+        res.status(200).json({'chat': msg, 'id': req.user.id, 'name': user.name});
     }
     catch(err){
         res.json({'error': err});
