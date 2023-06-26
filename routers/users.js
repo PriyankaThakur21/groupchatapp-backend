@@ -7,6 +7,8 @@ router.post('/signup', UserController.signupUsers);
 
 router.post('/login', UserController.loginUsers);
 
-router.get('/getAllusers', UserController.decodeToken, UserController.getAllusers);
+router.get('/getAllusers/:groupid', UserController.decodeToken, UserController.getAllusers);
+
+router.get('/getuser/:userid', UserController.getUser);
 
 module.exports = router;

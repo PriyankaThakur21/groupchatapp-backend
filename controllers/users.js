@@ -1,4 +1,5 @@
 const User = require('../models/users');
+const Usergroup = require('../models/usergroup');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {Op} =require('sequelize');
@@ -28,7 +29,6 @@ function generateAccessToken(id){
 
 exports.decodeToken = async(req, res, next)=>{
     try{
-
         const token = req.header('Authorization');
         const user = jwt.verify(token, process.env.TOKEN_SECRET);
         const fuser = await User.findByPk(user.id);
@@ -94,13 +94,26 @@ exports.loginUsers = async(req, res, next)=>{
 
 exports.getAllusers = async(req, res, next)=>{
     try{
-
-    const users = await User.findAll({where:{id:{[Op.ne]: +req.user.id}},
-        attributes:['id','name']
-    });
-    res.status(200).json(users);
+        const gid = req.params.groupid;
+        console.log(gid)
+    const users = await Usergroup.findAll({where:{groupId: gid}});
+    console.log(users)
+    res.status(200).json({'users': users, 'id': req.user.id});
     }
     catch(err){
+        console.log(err)
         res.status(401).json('Something went wrong');
     }
+}
+
+exports.getUser = async(req, res, next)=>{
+    try{
+        const id = req.params.userid;
+        const user = await User.findByPk(id);
+        console.log(user);
+        res.json({'name':user.name, 'id': user.id});
+        }
+        catch(err){
+            console.log(err);
+        }
 }

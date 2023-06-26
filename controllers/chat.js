@@ -1,9 +1,11 @@
 const Chats = require('../models/chat');
+const User = require('../models/users');
 
 exports.postmsg = async(req, res, next)=>{
     try{
     const {message} = req.body;
-    const data = await Chats.create({message, userId: req.user.id});
+    const id = req.params.groupid;
+    const data = req.user.createChat({message: message, groupId: id});
     res.status(201).json({'success': true});
     }
     catch(err){
@@ -13,7 +15,9 @@ exports.postmsg = async(req, res, next)=>{
 
 exports.getmsg = async(req, res, next)=>{
     try{
-        const msg = await Chats.findAll();
+        const group = req.params.groupid;
+        const msg = await Chats.findAll({where:{groupId: group}});
+        console.log(msg)
         const user = await User.findByPk(req.user.id);
         res.status(200).json({'chat': msg, 'id': req.user.id, 'name': user.name});
     }

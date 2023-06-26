@@ -8,4 +8,6 @@ router.post('/creategroup', UserController.decodeToken, GroupController.addGroup
 
 router.get('/getAllgroups', UserController.decodeToken, GroupController.getmygroups);
 
+router.get('/getgroup/:groupid', GroupController.getgroup);
+
 module.exports = router;
