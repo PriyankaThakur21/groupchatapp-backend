@@ -7,7 +7,11 @@ const Chats = sequelize.define('chats',{
         autoIncrement: true,
         primaryKey: true
     },
-    message: Sequelize.STRING
+    message: Sequelize.STRING,
+    link: {
+        type:Sequelize.BOOLEAN,
+        defaultValue:false
+    }
 })
 
 module.exports = Chats;

@@ -1,5 +1,7 @@
 const Chats = require('../models/chat');
 const User = require('../models/users');
+const AWS = require('aws-sdk');
+require('dotenv').config()
 
 exports.postmsg = async(req, res, next)=>{
     try{
@@ -25,3 +27,47 @@ exports.getmsg = async(req, res, next)=>{
         res.json({'error': err});
     }
 }
+
+exports.uploadfile = async (req, res, next)=>{
+    try{
+    const file = req.body.file;
+    const userid = req.user.id;
+    const groupid = req.params.groupid;
+    const filename = `Files/${new Date()}.jpg`;
+    const fileUrl = await uploadToS3(file, filename);
+    const data = await req.user.createChat({message: fileUrl, groupId: groupid, link: true});
+    res.status(201).json('Successfuly send');
+    } 
+    catch(err){
+        console.log(err);
+        res.status(400).json('something went wrongg', err);
+    }
+}
+
+async function uploadToS3(data, filename){
+    const bucketName = process.env.BUCKET_NAME;
+    const IAMuserkey = process.env.IAM_USER_KEY;
+    const IAMusersecret = process.env.IAM_USER_SECRET;
+
+    let s3bucket = new AWS.S3({
+        accessKeyId : IAMuserkey,
+        secretAccessKey: IAMusersecret
+    })
+        var params= {
+            Bucket: bucketName,
+            Key: filename,
+            Body: data,
+            ACL: 'public-read'
+        }
+        return new Promise((resolve, reject)=>{
+            s3bucket.upload(params, (err,s3response)=>{
+            if(err){
+                console.log('something went wrong', err);
+            }
+            else{
+                console.log('success', s3response);
+                resolve(s3response.Location);
+                
+            }
+        })})
+    }

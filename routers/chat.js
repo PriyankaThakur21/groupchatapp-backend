@@ -8,4 +8,6 @@ router.post('/postmsg/:groupid', UserController.decodeToken, ChatController.post
 
 router.get('/getmsg/:groupid',UserController.decodeToken, ChatController.getmsg);
 
+router.post('/uploadfile/:groupid', UserController.decodeToken, ChatController.uploadfile);
+
 module.exports = router;

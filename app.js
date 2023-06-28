@@ -1,11 +1,6 @@
 const express = require('express');
 const app = express();
 
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-const httpServer = createServer(app);
-const io = new Server(httpServer, {});
-
 const cors = require('cors');
 app.use(cors());
 
@@ -38,7 +33,7 @@ Users.belongsToMany(Groups, {through: Usergroup});
 
 sequelize.sync()
 .then((res)=>{
-    httpServer.listen(3000);
+    app.listen(3000);
 })
 .catch((err)=>{
     console.log(err);
