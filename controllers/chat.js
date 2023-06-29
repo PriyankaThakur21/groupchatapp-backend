@@ -7,7 +7,7 @@ exports.postmsg = async(req, res, next)=>{
     try{
     const {message} = req.body;
     const id = req.params.groupid;
-    const data = req.user.createChat({message: message, groupId: id});
+    const data = req.user.createChat({message: message, groupId: id, name: req.user.name});
     res.status(201).json({'success': true});
     }
     catch(err){
@@ -19,9 +19,7 @@ exports.getmsg = async(req, res, next)=>{
     try{
         const group = req.params.groupid;
         const msg = await Chats.findAll({where:{groupId: group}});
-        console.log(msg)
-        const user = await User.findByPk(req.user.id);
-        res.status(200).json({'chat': msg, 'id': req.user.id, 'name': user.name});
+        res.status(200).json({'chat': msg, 'id': req.user.id});
     }
     catch(err){
         res.json({'error': err});
@@ -31,11 +29,10 @@ exports.getmsg = async(req, res, next)=>{
 exports.uploadfile = async (req, res, next)=>{
     try{
     const file = req.body.file;
-    const userid = req.user.id;
     const groupid = req.params.groupid;
     const filename = `Files/${new Date()}.jpg`;
     const fileUrl = await uploadToS3(file, filename);
-    const data = await req.user.createChat({message: fileUrl, groupId: groupid, link: true});
+    await req.user.createChat({message: fileUrl, groupId: groupid, link: true, name: req.user.name});
     res.status(201).json('Successfuly send');
     } 
     catch(err){

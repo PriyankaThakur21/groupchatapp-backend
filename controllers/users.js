@@ -2,10 +2,8 @@ const User = require('../models/users');
 const Usergroup = require('../models/usergroup');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const {Op} =require('sequelize');
 require('dotenv').config();
 
-// check weather email is already present or not
 async function emailPresent(email){
     try{
         const user = await User.findOne({where: {email: email}});

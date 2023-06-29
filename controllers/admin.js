@@ -14,9 +14,7 @@ exports.addmember = async(req, res, next)=>{
     }
 
     const usertobeadded = await User.findOne({where: {email: email}});
-    console.log(usertobeadded);
     if(!usertobeadded){
-        console.log('hi')
         return res.json({message: 'User not register'});
     }
     const group = await Group.findByPk(groupid);

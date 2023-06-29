@@ -7,6 +7,7 @@ const Chats = sequelize.define('chats',{
         autoIncrement: true,
         primaryKey: true
     },
+    name: Sequelize.STRING,
     message: Sequelize.STRING,
     link: {
         type:Sequelize.BOOLEAN,

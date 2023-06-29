@@ -1,12 +1,9 @@
 const Group = require('../models/groups');
-const Usergroup = require('../models/usergroup');
 
 exports.addGroup = async(req, res, next)=>{
     try{
     const groupname = req.body.group;
-    console.log(groupname)
     const group = await req.user.createGroup({groupName :groupname}, {through:{admin:true}});
-    console.log(group)
     res.status(200).json({'Success': true});
     }
     catch(err){
@@ -29,7 +26,6 @@ exports.getmygroups = async(req, res, next)=>{
 
 exports.getgroup = async(req, res, next)=>{
     try{
-    console.log('hi')
     const id = req.params.groupid;
     const group = await Group.findByPk(id);
     console.log(group);
